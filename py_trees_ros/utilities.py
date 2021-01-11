@@ -268,18 +268,18 @@ class Publishers(object):
         # TODO: check for the correct setting of publisher_details
         self.publisher_details_msg = []
         for (name, topic_name, publisher_type, latched) in publisher_details:
-            if latched:
-                self.__dict__[name] = node.create_publisher(
-                    msg_type=publisher_type,
-                    topic=topic_name,
-                    qos_profile=qos_profile_latched()
-                )
-            else:
-                self.__dict__[name] = node.create_publisher(
-                    msg_type=publisher_type,
-                    topic=topic_name,
-                    qos_profile=qos_profile_unlatched()
-                )
+            # if latched:
+            #     self.__dict__[name] = node.create_publisher(
+            #         msg_type=publisher_type,
+            #         topic=topic_name,
+            #         qos_profile=qos_profile_latched()
+            #     )
+            # else:
+            #     self.__dict__[name] = node.create_publisher(
+            #         msg_type=publisher_type,
+            #         topic=topic_name,
+            #         qos_profile=qos_profile_unlatched()
+            #     )
             resolved_name = resolve_name(node, topic_name)
             message_type = publisher_type.__class__.__module__.split('.')[0] + "/" + publisher_type.__class__.__name__
             self.publisher_details_msg.append(

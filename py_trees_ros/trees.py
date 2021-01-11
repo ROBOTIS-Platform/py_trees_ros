@@ -397,7 +397,7 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         # other
         if self.statistics is not None:
             tree_message.statistics = self.statistics
-        self.publishers.snapshots.publish(tree_message)
+        # self.publishers.snapshots.publish(tree_message)
 
     def _cleanup(self):
         with self.lock:
