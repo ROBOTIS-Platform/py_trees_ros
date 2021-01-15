@@ -158,6 +158,14 @@ def get_py_trees_home():
     return home
 
 
+def qos_profile_best_effort():
+    return rclpy.qos.QoSProfile(
+        history=rclpy.qos.QoSHistoryPolicy.KEEP_LAST,
+        depth=10,
+        durability=rclpy.qos.QoSDurabilityPolicy.VOLATILE,
+        reliability=rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
+    )
+
 def qos_profile_latched():
     """
     Convenience retrieval for a latched topic (publisher / subscriber)
@@ -268,18 +276,18 @@ class Publishers(object):
         # TODO: check for the correct setting of publisher_details
         self.publisher_details_msg = []
         for (name, topic_name, publisher_type, latched) in publisher_details:
-            # if latched:
-            #     self.__dict__[name] = node.create_publisher(
-            #         msg_type=publisher_type,
-            #         topic=topic_name,
-            #         qos_profile=qos_profile_latched()
-            #     )
-            # else:
-            #     self.__dict__[name] = node.create_publisher(
-            #         msg_type=publisher_type,
-            #         topic=topic_name,
-            #         qos_profile=qos_profile_unlatched()
-            #     )
+            if latched:
+                self.__dict__[name] = node.create_publisher(
+                    msg_type=publisher_type,
+                    topic=topic_name,
+                    qos_profile=qos_profile_best_effort()
+                )
+            else:
+                self.__dict__[name] = node.create_publisher(
+                    msg_type=publisher_type,
+                    topic=topic_name,
+                    qos_profile=qos_profile_unlatched()
+                )
             resolved_name = resolve_name(node, topic_name)
             message_type = publisher_type.__class__.__module__.split('.')[0] + "/" + publisher_type.__class__.__name__
             self.publisher_details_msg.append(
@@ -332,7 +340,7 @@ class Subscribers(object):
                     msg_type=subscriber_type,
                     topic=topic_name,
                     callback=callback,
-                    qos_profile=qos_profile_latched()
+                    qos_profile=qos_profile_best_effort()
                 )
             else:
                 self.__dict__[name] = node.create_subscription(
