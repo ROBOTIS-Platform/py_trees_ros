@@ -143,6 +143,8 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         # timeout parameter:
         #   if not initialised from, e.g. launch, then
         #   use the arg provided timeout
+        self.node.declare_parameter('snapshots_pub')
+        snapshots_pub = self.node.get_parameter('snapshots_pub').value
         self.node.declare_parameter(
             name='setup_timeout_sec',
             value=timeout if not py_trees.common.Duration.INFINITE else py_trees.common.Duration.INFINITE.value,
@@ -166,7 +168,8 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         if setup_timeout_sec == py_trees.common.Duration.INFINITE.value:
             setup_timeout_sec = py_trees.common.Duration.INFINITE
 
-        self._setup_publishers()
+        if snapshots_pub:
+            self._setup_publishers()
         self.blackboard_exchange = blackboard.Exchange()
         self.blackboard_exchange.setup(self.node)
         self.post_tick_handlers.append(self._on_change_post_tick_handler)
@@ -345,7 +348,7 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         """
         # checks
         if self.publishers is None:
-            self.node.get_logger().error("call setup() on this tree to initialise the ros components")
+            # self.node.get_logger().error("call setup() on this tree to initialise the ros components")
             return
         if self.root.tip() is None:
             self.node.get_logger().error("the root behaviour failed to return a tip [cause: tree is in an INVALID state]")
@@ -397,7 +400,7 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         # other
         if self.statistics is not None:
             tree_message.statistics = self.statistics
-        # self.publishers.snapshots.publish(tree_message)
+        self.publishers.snapshots.publish(tree_message)
 
     def _cleanup(self):
         with self.lock:
