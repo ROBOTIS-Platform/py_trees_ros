@@ -139,7 +139,7 @@ class BehaviourTree(py_trees.trees.BehaviourTree):
         """
         # node creation - can raise rclpy.exceptions.NotInitializedException
         default_node_name = "tree"
-        self.node = rclpy.create_node(node_name=default_node_name)
+        self.node = rclpy.create_node(node_name=default_node_name, start_parameter_services=False)
         # timeout parameter:
         #   if not initialised from, e.g. launch, then
         #   use the arg provided timeout
@@ -467,7 +467,7 @@ class Watcher(object):
         """
         default_node_name = "watcher_" + str(os.getpid())
         try:
-            self.node = rclpy.create_node(node_name=default_node_name)
+            self.node = rclpy.create_node(node_name=default_node_name, start_parameter_services=False)
             time.sleep(0.1)  # ach, the magic foo before discovery works
         except rclpy.exceptions.NotInitializedException:
             print(console.red + "ERROR: rlcpy not yet initialised [{}]".format(default_node_name) + console.reset)
